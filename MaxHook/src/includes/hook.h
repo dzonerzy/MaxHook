@@ -1,6 +1,10 @@
 #pragma once
 #include <Windows.h>
-#include "frida-gum.h"
+#ifdef _WIN64
+#include "frida-gum-64.h"
+#else
+#include "frida-gum-32.h"
+#endif
 
 #define MHOOK __stdcall
 

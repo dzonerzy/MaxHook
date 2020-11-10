@@ -30,6 +30,12 @@
     <ClInclude Include="includes\MaxHook.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="src\includes\frida-gum-32.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="src\includes\frida-gum-64.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\hook.c">

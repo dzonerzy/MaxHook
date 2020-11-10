@@ -2,8 +2,6 @@
 # define GUM_STATIC
 #endif
 
-//#pragma comment(lib, "frida-gum.lib")
-
 #pragma comment(lib, "dnsapi.lib")
 #pragma comment(lib, "iphlpapi.lib")
 #pragma comment(lib, "psapi.lib")

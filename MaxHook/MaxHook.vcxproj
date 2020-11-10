@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClInclude Include="includes\MaxHook.h" />
     <ClInclude Include="src\includes\framework.h" />
+    <ClInclude Include="src\includes\frida-gum-32.h" />
+    <ClInclude Include="src\includes\frida-gum-64.h" />
     <ClInclude Include="src\includes\frida-gum.h" />
     <ClInclude Include="src\includes\hook.h" />
   </ItemGroup>
@@ -88,12 +90,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>lib$(ProjectName)-x$(PlatformArchitecture)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>lib$(ProjectName)-x$(PlatformArchitecture)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -129,7 +133,7 @@
       </PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\src\includes</AdditionalIncludeDirectories>
       <LanguageStandard>Default</LanguageStandard>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -194,10 +198,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>frida-gum.lib</AdditionalDependencies>
+      <AdditionalDependencies>frida-gum.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(MSBuildProjectDirectory)\libs\x86_64\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(MSBuildProjectDirectory)\libs\x86_64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
