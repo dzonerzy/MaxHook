@@ -14,7 +14,7 @@ static void mhook_listener_on_enter(GumInvocationListener* listener, GumInvocati
     MHListener* self = MH_LISTENER(listener);
     unsigned long long hookId = GUM_IC_GET_FUNC_DATA(ic, unsigned int);
     Hook* hook = mhook_get_hook(hookId);
-    if(hook)
+    if(hook && hook->enabled)
         hook->onEnter(ic);
 }
 
@@ -23,7 +23,7 @@ static void mhook_listener_on_leave(GumInvocationListener* listener, GumInvocati
     MHListener* self = MH_LISTENER(listener);
     unsigned long long hookId = GUM_IC_GET_FUNC_DATA(ic, unsigned int);
     Hook* hook = mhook_get_hook(hookId);
-    if(hook)
+    if(hook && hook->enabled)
         hook->onLeave(ic);
 }
 
@@ -75,7 +75,7 @@ void mhook_append_hook(Hook** hook) {
     }
 }
 
-__declspec(dllexport) Hook* mhook_get_hook(unsigned long long hookId) {
+MHOOK_EXPORTED(Hook*) mhook_get_hook(unsigned long long hookId) {
     Hook* hook = HookHead;
     while (hook) {
         if (hook->hookId == hookId) {
@@ -88,7 +88,7 @@ __declspec(dllexport) Hook* mhook_get_hook(unsigned long long hookId) {
     return NULL;
 }
 
-__declspec(dllexport) unsigned long long mhook_add(void * ptr, HookCallback onEnter, HookCallback onLeave) {
+MHOOK_EXPORTED(unsigned long long) mhook_add(void * ptr, HookCallback onEnter, HookCallback onLeave) {
     Hook* hook = (Hook*)malloc(sizeof(Hook));
     Hook* tmp = NULL;
     if (hook) {
@@ -99,6 +99,7 @@ __declspec(dllexport) unsigned long long mhook_add(void * ptr, HookCallback onEn
             hook->onEnter = onEnter;
             hook->onLeave = onLeave;
             hook->ptr = ptr;
+            hook->enabled = true;
             mhook_append_hook(&hook);
             mhook_initialize_hook(hook);
             return hook->hookId;
@@ -108,7 +109,7 @@ __declspec(dllexport) unsigned long long mhook_add(void * ptr, HookCallback onEn
     return -1;
 }
 
-__declspec(dllexport) bool mhook_remove(unsigned long hookId) {
+MHOOK_EXPORTED(bool) mhook_remove(unsigned long hookId) {
     Hook* hook = mhook_get_hook(hookId);
     if (hook) {
         if (hook->next == NULL && hook->prev == NULL) {
@@ -152,24 +153,54 @@ unsigned int mhook_get_hash(const char* fmt, ...)
     return h;
 }
 
-__declspec(dllexport) void mhook_set_parameter(MHInvocationContext* ctx, int n, void* value) {
+MHOOK_EXPORTED(void) mhook_set_parameter(MHInvocationContext* ctx, int n, void* value) {
     gum_invocation_context_replace_nth_argument(ctx, n, value);
 }
 
-__declspec(dllexport) void* mhook_get_parameter(MHInvocationContext* ctx, int n) {
+MHOOK_EXPORTED(void*) mhook_get_parameter(MHInvocationContext* ctx, int n) {
     return gum_invocation_context_get_nth_argument(ctx, n);
 }
 
-__declspec(dllexport) void mhook_replace_return_value(MHInvocationContext* ctx, void * value) {
+MHOOK_EXPORTED(void) mhook_replace_return_value(MHInvocationContext* ctx, void * value) {
     gum_invocation_context_replace_return_value(ctx, value);
 }
 
-extern  __declspec(dllexport) void mhook_init() {
+MHOOK_EXPORTED(void) mhook_init() {
     gum_init_embedded();
 }
 
-extern __declspec(dllexport) void mhook_deinit() {
+MHOOK_EXPORTED(void) mhook_deinit() {
     gum_deinit_embedded();
+}
+
+MHOOK_EXPORTED(bool) mhook_enable(unsigned long long hookId) {
+    Hook* hook = mhook_get_hook(hookId);
+    if (hook) {
+        hook->enabled = true;
+        return true;
+    }
+    return false;
+}
+
+MHOOK_EXPORTED(bool) mhook_disable(unsigned long long hookId) {
+    Hook* hook = mhook_get_hook(hookId);
+    if (hook) {
+        hook->enabled = false;
+        return true;
+    }
+    return false;
+}
+
+MHOOK_EXPORTED(bool) mhook_is_enable(unsigned long long hookId) {
+    Hook* hook = mhook_get_hook(hookId);
+    if (hook) {
+        return hook->enabled;
+    }
+    return false;
+}
+
+MHOOK_EXPORTED(void*) mhook_get_return_address(MHInvocationContext* ctx) {
+    return gum_invocation_context_get_return_address(ctx);
 }
 
 Hook* HookHead;

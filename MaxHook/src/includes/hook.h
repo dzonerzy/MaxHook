@@ -6,6 +6,7 @@
 #include "frida-gum-32.h"
 #endif
 
+#define MHOOK_EXPORTED(t) __declspec(dllexport) t
 #define MHOOK __stdcall
 
 typedef struct _MHListener MHListener;
@@ -27,19 +28,24 @@ struct _Hook {
     void* ptr;
     HookCallback onEnter;
     HookCallback onLeave;
+    bool enabled;
 };
 
 void mhook_initialize_hook(Hook* hook);
 void mhook_append_hook(Hook** hook);
 unsigned int mhook_get_hash(const char* fmt, ...);
-Hook* mhook_get_last_hook();
-__declspec(dllexport)  Hook* mhook_get_hook(unsigned long long hookId);
-__declspec(dllexport) void mhook_set_parameter(MHInvocationContext* ctx, int n, void * value);
-__declspec(dllexport) void* mhook_get_parameter(MHInvocationContext* ctx, int n);
-__declspec(dllexport) void mhook_replace_return_value(MHInvocationContext* ctx, void * value);
-__declspec(dllexport) unsigned long long  mhook_add(void* ptr, HookCallback onEnter, HookCallback onLeave);
-__declspec(dllexport) bool mhook_remove(unsigned long hookId);
-__declspec(dllexport) void mhook_init();
-__declspec(dllexport) void mhook_deinit();
+MHOOK_EXPORTED(Hook*) mhook_get_hook(unsigned long long hookId);
+MHOOK_EXPORTED(void) mhook_set_parameter(MHInvocationContext* ctx, int n, void * value);
+MHOOK_EXPORTED(void*) mhook_get_parameter(MHInvocationContext* ctx, int n);
+MHOOK_EXPORTED(void) mhook_replace_return_value(MHInvocationContext* ctx, void * value);
+MHOOK_EXPORTED(unsigned long long) mhook_add(void* ptr, HookCallback onEnter, HookCallback onLeave);
+MHOOK_EXPORTED(bool) mhook_remove(unsigned long hookId);
+MHOOK_EXPORTED(void) mhook_init();
+MHOOK_EXPORTED(void) mhook_deinit();
+MHOOK_EXPORTED(bool) mhook_enable(unsigned long long hookId);
+MHOOK_EXPORTED(bool) mhook_disable(unsigned long long hookId);
+MHOOK_EXPORTED(bool) mhook_is_enable(unsigned long long hookId);
+MHOOK_EXPORTED(void*) mhook_get_return_address(MHInvocationContext* ctx);
+
 
 extern Hook* HookHead;
