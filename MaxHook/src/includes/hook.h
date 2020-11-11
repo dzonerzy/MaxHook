@@ -7,12 +7,12 @@
 #endif
 
 #define MHOOK_EXPORTED(t) __declspec(dllexport) t
-#define MHOOK __stdcall
+#define MHOOK_CALLBACK __stdcall
 
 typedef struct _MHListener MHListener;
 typedef struct _Hook Hook;
 typedef void* MHInvocationContext;
-typedef void (MHOOK* HookCallback)(MHInvocationContext* ic);
+typedef void (MHOOK_CALLBACK* HookCallback)(MHInvocationContext* ic);
 
 struct _MHListener
 {
